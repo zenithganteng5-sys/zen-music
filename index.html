@@ -3,156 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zenith Cinematic Player | Aesthetic</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;600&display=swap" rel="stylesheet">
+    <title>Zenith Cinematic | Lyrics Mode</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;600&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; }
-        body { margin: 0; background: #000; overflow: hidden; font-family: 'Montserrat', sans-serif; }
-        .container { position: relative; width: 100vw; height: 100vh; }
+        body { margin: 0; background: #000; overflow: hidden; font-family: 'Poppins', sans-serif; }
         
-        /* Video Background - Fullscreen & Pointer Anti-Klik */
+        /* Video Background */
         iframe {
             position: absolute; top: 50%; left: 50%;
-            width: 100vw; height: 56.25vw; /* Ratio 16:9 */
+            width: 100vw; height: 56.25vw;
             transform: translate(-50%, -50%);
             pointer-events: none; border: none;
         }
 
-        /* Overlay Gelap dengan Efek Radial Blur Sedikit */
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.7) 100%);
+            background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0.6) 100%);
             z-index: 1;
         }
 
-        /* Header Tulisan "CINEMATIC MODE" */
-        .header {
+        /* Panel Lirik di Paling Kiri */
+        .lyrics-panel {
             position: absolute;
-            top: 20px;
-            left: 20px;
+            left: 0; top: 0;
+            width: 350px; height: 100%;
             z-index: 10;
-        }
-        .header h1 {
-            color: rgba(255, 255, 255, 0.2);
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            font-weight: 100;
-            margin: 0;
+            padding: 60px 40px;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(15px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            transition: 0.5s;
         }
 
-        /* Panel Input - Minimalis Glassmorphism di Sudut Kiri Bawah */
-        .ui {
+        .lyrics-header {
+            color: #00f2ff;
+            font-size: 0.7rem;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        /* Area Teks Lirik yang bisa di-scroll */
+        textarea#lyricsInput {
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            height: 100%;
+            width: 100%;
+            resize: none;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 300;
+            scrollbar-width: none; /* Hide scrollbar Firefox */
+        }
+        textarea#lyricsInput::-webkit-scrollbar { display: none; } /* Hide scrollbar Chrome */
+
+        /* UI Control di Bawah */
+        .ui-bottom {
             position: absolute;
             bottom: 20px;
-            left: 20px;
+            right: 20px;
             z-index: 10;
             display: flex;
-            align-items: center;
             gap: 10px;
+        }
+
+        input#videoID {
             background: rgba(255, 255, 255, 0.05);
-            padding: 10px 15px;
-            border-radius: 10px;
-            backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-        }
-
-        /* Teks Status */
-        .status-text {
-            color: rgba(0, 242, 255, 0.5);
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            font-weight: 600;
-            display: none; /* Disembunyikan dulu */
-        }
-
-        /* Input Minimalis */
-        input {
-            padding: 5px 8px;
-            width: 180px;
-            border-radius: 5px;
-            border: none;
-            background: rgba(0, 0, 0, 0.5);
             color: white;
-            font-size: 0.7rem;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 0.8rem;
             outline: none;
-            transition: 0.3s;
-        }
-        input:focus {
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid #00f2ff;
+            width: 250px;
         }
 
-        /* Tombol Biru Neon */
         button {
-            padding: 5px 10px;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
             background: #00f2ff;
-            color: #000;
-            font-weight: 600;
-            font-size: 0.7rem;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
             text-transform: uppercase;
-            box-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
-            transition: 0.3s;
+            font-size: 0.7rem;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
         }
-        button:hover {
-            box-shadow: 0 0 20px #00f2ff;
-            background: white;
+
+        /* Watermark Zenith */
+        .watermark {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 0.6rem;
+            letter-spacing: 5px;
+            z-index: 10;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="overlay"></div>
-        
-        <div class="header">
-            <h1>CINEMATIC MODE</h1>
-        </div>
+    <div class="overlay"></div>
+    <div class="watermark">ZENITH CINEMATIC PRO</div>
 
-        <iframe id="videoPlayer" 
-            src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&controls=0&loop=1&playlist=jfKfPfyJRdk" 
-            allow="autoplay">
-        </iframe>
+    <div class="lyrics-panel">
+        <div class="lyrics-header">Now Playing Lyrics</div>
+        <textarea id="lyricsInput" placeholder="Tempel lirik lagu di sini... lalu scroll manual sesuai lagunya."></textarea>
+    </div>
 
-        <div class="ui">
-            <span class="status-text" id="status-display">NOW GRINDING</span>
-            <input type="text" id="linkInput" placeholder="Paste Link YouTube Disini...">
-            <button onclick="updateVideo()">PLAY</button>
-        </div>
+    <iframe id="videoPlayer" 
+        src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&controls=0&loop=1&playlist=jfKfPfyJRdk" 
+        allow="autoplay">
+    </iframe>
+
+    <div class="ui-bottom">
+        <input type="text" id="videoID" placeholder="Paste YouTube Link...">
+        <button onclick="changeTrack()">Update</button>
     </div>
 
     <script>
-        function updateVideo() {
-            const input = document.getElementById('linkInput').value;
+        function changeTrack() {
+            const input = document.getElementById('videoID').value;
             let id = "";
-            
-            // Logika ambil ID Video dari Link
             if (input.includes("v=")) {
                 id = input.split('v=')[1].split('&')[0];
             } else if (input.includes("youtu.be/")) {
                 id = input.split('youtu.be/')[1].split('?')[0];
-            } else {
-                id = input;
-            }
+            } else { id = input; }
 
             if(id) {
-                // Ganti video tanpa Mute (Suara nyala pas diganti)
                 const newSrc = `https://www.youtube.com/embed/${id}?autoplay=1&controls=0&loop=1&playlist=${id}`;
                 document.getElementById('videoPlayer').src = newSrc;
-                
-                // Ubah status dan sembunyikan kotak input
-                document.getElementById('status-display').style.display = 'block';
-                document.getElementById('linkInput').style.display = 'none';
-                document.getElementById('status-display').innerText = `NEW TRACK LOADED`;
-                
-                // Kembalikan kotak input kalau diklik statusnya
-                document.getElementById('status-display').onclick = function() {
-                    document.getElementById('linkInput').style.display = 'block';
-                    document.getElementById('status-display').style.display = 'none';
-                }
+                // Bersihkan teks lirik buat lagu baru
+                document.getElementById('lyricsInput').value = "";
+                document.getElementById('lyricsInput').placeholder = "Masukkan lirik baru...";
             }
         }
     </script>
