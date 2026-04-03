@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zenith Cinematic Player</title>
+    <style>
+        body { margin: 0; background: #000; overflow: hidden; font-family: sans-serif; }
+        .container { position: relative; width: 100vw; height: 100vh; }
+        
+        /* Video Background */
+        iframe {
+            position: absolute; top: 50%; left: 50%;
+            width: 100vw; height: 56.25vw; /* Ratio 16:9 */
+            transform: translate(-50%, -50%);
+            pointer-events: none; border: none;
+        }
+
+        .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); z-index: 1;
+        }
+
+        .ui {
+            position: relative; z-index: 2; color: white; text-align: center;
+            top: 40%;
+        }
+
+        input { padding: 10px; width: 300px; border-radius: 5px; border: none; }
+        button { padding: 10px 20px; border-radius: 5px; border: none; cursor: pointer; background: #00f2ff; font-weight: bold; }
+        
+        h1 { letter-spacing: 5px; text-shadow: 0 0 10px #00f2ff; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="overlay"></div>
+        
+        <iframe id="videoPlayer" 
+            src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&controls=0&loop=1&playlist=jfKfPfyJRdk" 
+            allow="autoplay">
+        </iframe>
+
+        <div class="ui">
+            <h1>CINEMATIC MODE</h1>
+            <br>
+            <input type="text" id="linkInput" placeholder="Paste Link YouTube Disini...">
+            <button onclick="updateVideo()">PLAY</button>
+            <p style="font-size: 0.7rem; opacity: 0.5; margin-top: 20px;">Catatan: Browser akan Mute video pertama kali. Klik PLAY untuk ganti lagu & suara.</p>
+        </div>
+    </div>
+
+    <script>
+        function updateVideo() {
+            const input = document.getElementById('linkInput').value;
+            let id = "";
+            
+            if (input.includes("v=")) {
+                id = input.split('v=')[1].split('&')[0];
+            } else if (input.includes("youtu.be/")) {
+                id = input.split('youtu.be/')[1].split('?')[0];
+            } else {
+                id = input;
+            }
+
+            if(id) {
+                // Ganti sumber video tanpa API rumit
+                const newSrc = `https://www.youtube.com/embed/${id}?autoplay=1&controls=0&loop=1&playlist=${id}`;
+                document.getElementById('videoPlayer').src = newSrc;
+            }
+        }
+    </script>
+</body>
+</html>
