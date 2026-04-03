@@ -3,157 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zenith Cinematic | Smart Lyrics</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;300;600&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+    <title>Zenith | Official Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Poppins:wght@300;600&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; }
-        body { margin: 0; background: #000; overflow: hidden; font-family: 'Poppins', sans-serif; }
-        
-        iframe {
-            position: absolute; top: 50%; left: 50%;
-            width: 100vw; height: 56.25vw;
-            transform: translate(-50%, -50%);
-            pointer-events: none; border: none;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(90deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.7) 100%);
-            z-index: 1;
-        }
-
-        .lyrics-panel {
-            position: absolute;
-            left: 0; top: 0;
-            width: 380px; height: 100%;
-            z-index: 10;
-            padding: 60px 30px;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(0, 242, 255, 0.2);
-        }
-
-        .lyrics-header {
-            color: #00f2ff;
-            font-size: 0.7rem;
-            letter-spacing: 3px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            font-weight: 600;
+        body {
+            background-color: #050505;
             display: flex;
-            justify-content: space-between;
-        }
-
-        textarea#lyricsInput {
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-size: 1.2rem;
-            line-height: 1.8;
-            height: 85%;
-            width: 100%;
-            resize: none;
-            outline: none;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             font-family: 'Poppins', sans-serif;
-        }
-
-        .ui-bottom {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 10px;
-        }
-
-        .input-group { display: flex; gap: 5px; }
-
-        input#videoID {
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(0, 242, 255, 0.3);
             color: white;
-            padding: 10px;
-            border-radius: 5px;
-            width: 280px;
-            outline: none;
+            overflow: hidden;
         }
 
-        button {
-            background: #00f2ff;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
+        /* Animasi Background */
+        .bg-glow {
+            position: absolute;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, #00f2ff 0%, transparent 70%);
+            filter: blur(100px);
+            opacity: 0.15;
+            animation: pulse 8s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1) translate(-50px, -50px); }
+            100% { transform: scale(1.5) translate(50px, 50px); }
+        }
+
+        /* Card Utama dengan RGB Border */
+        .card {
+            position: relative;
+            z-index: 10;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(25px);
+            padding: 60px 40px;
+            border-radius: 25px;
+            text-align: center;
+            width: 400px;
+            border: 2px solid transparent;
+            /* Efek Garis Berwarna di Pinggir */
+            border-image: linear-gradient(45deg, #00f2ff, #ff00ff) 1;
+            box-shadow: 0 0 50px rgba(0, 242, 255, 0.1);
+        }
+
+        .card h2 {
+            font-family: 'Orbitron', sans-serif;
             font-size: 0.7rem;
-            transition: 0.3s;
-        }
-
-        button.btn-search {
-            background: rgba(255, 255, 255, 0.1);
+            letter-spacing: 6px;
             color: #00f2ff;
-            border: 1px solid #00f2ff;
+            margin-bottom: 10px;
+            opacity: 0.8;
         }
 
-        button:hover { opacity: 0.8; transform: scale(1.05); }
+        .card h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 15px;
+            background: linear-gradient(to bottom, #fff, #00f2ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
+        }
 
-        .watermark {
-            position: absolute; top: 20px; right: 20px;
-            color: rgba(255, 255, 255, 0.1);
-            font-size: 0.6rem; letter-spacing: 5px; z-index: 10;
+        .description {
+            font-size: 0.85rem;
+            color: #ccc;
+            margin-bottom: 45px;
+            line-height: 1.8;
+            font-weight: 300;
+        }
+
+        /* Tombol YouTube Pro */
+        .yt-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            background: #ff0000;
+            color: white;
+            padding: 18px 35px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Orbitron', sans-serif;
+            box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
+        }
+
+        .yt-button:hover {
+            transform: scale(1.1) translateY(-5px);
+            background: #fff;
+            color: #ff0000;
+            box-shadow: 0 0 50px rgba(255, 255, 255, 0.5);
+        }
+
+        .footer {
+            margin-top: 40px;
+            font-size: 0.55rem;
+            letter-spacing: 4px;
+            color: #555;
         }
     </style>
 </head>
 <body>
-    <div class="overlay"></div>
-    <div class="watermark">ZENITH SMART PLAYER</div>
+    <div class="bg-glow"></div>
+    
+    <div class="card">
+        <h2>CREATOR & DEVELOPER</h2>
+        <h1>ZENITH</h1>
+        
+        <p class="description">
+            Founder of NexusID • Minecraft Enthusiast • Roblox Studio Developer • Grinding CDID.
+        </p>
 
-    <div class="lyrics-panel">
-        <div class="lyrics-header">
-            <span>LYRICS PANEL</span>
-            <span id="hint" style="color: #fff; opacity: 0.3; font-size: 0.5rem;">SCROLL MANUALLY</span>
-        </div>
-        <textarea id="lyricsInput" placeholder="1. Paste Link YouTube&#10;2. Klik 'CARI LIRIK'&#10;3. Paste lirik di sini..."></textarea>
+        <a href="https://www.youtube.com/@zenithmc10" target="_blank" class="yt-button">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/></svg>
+            SUBSCRIBE NOW
+        </a>
+
+        <div class="footer">ESTABLISHED MMXXVI</div>
     </div>
 
-    <iframe id="videoPlayer" src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=1&controls=0&loop=1&playlist=jfKfPfyJRdk" allow="autoplay"></iframe>
-
-    <div class="ui-bottom">
-        <div class="input-group">
-            <input type="text" id="videoID" placeholder="Paste YouTube Link...">
-            <button onclick="changeTrack()">PLAY</button>
-        </div>
-        <button class="btn-search" onclick="searchLyrics()">🔍 CARI LIRIK DI GOOGLE</button>
-    </div>
-
-    <script>
-        function changeTrack() {
-            const input = document.getElementById('videoID').value;
-            let id = "";
-            if (input.includes("v=")) { id = input.split('v=')[1].split('&')[0]; }
-            else if (input.includes("youtu.be/")) { id = input.split('youtu.be/')[1].split('?')[0]; }
-            else { id = input; }
-
-            if(id) {
-                const newSrc = `https://www.youtube.com/embed/${id}?autoplay=1&controls=0&loop=1&playlist=${id}`;
-                document.getElementById('videoPlayer').src = newSrc;
-                document.getElementById('lyricsInput').value = "";
-            }
-        }
-
-        function searchLyrics() {
-            const input = document.getElementById('videoID').value;
-            if (input) {
-                // Link Google Search otomatis buat lirik lagu tersebut
-                const query = encodeURIComponent(input + " lyrics");
-                window.open(`https://www.google.com/search?q=${query}`, '_blank');
-            } else {
-                alert("Paste link YouTube-nya dulu, Zen!");
-            }
-        }
-    </script>
 </body>
 </html>
