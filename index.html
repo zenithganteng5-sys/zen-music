@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zenith Muzik | Universal Player</title>
+    <title>Zenith Muzik | Ultimate Player</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -15,11 +15,7 @@
             background: #000;
         }
 
-        iframe, video #localVideo {
-            width: 100vw; height: 56.25vw;
-            border: none;
-        }
-
+        iframe, #localVideo { width: 100vw; height: 56.25vw; border: none; }
         #localVideo { display: none; width: 100%; height: 100%; object-fit: cover; }
 
         .overlay {
@@ -28,57 +24,58 @@
             z-index: 1; pointer-events: none;
         }
 
-        .media-controls {
-            position: absolute; bottom: 110px; left: 50%;
-            transform: translateX(-50%); display: flex;
-            align-items: center; gap: 15px; z-index: 15;
-        }
-
-        .ctrl-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(0, 242, 255, 0.4);
-            color: #00f2ff; font-family: 'Orbitron', sans-serif;
-            font-size: 0.8rem; padding: 10px 20px; border-radius: 8px;
-            cursor: pointer; transition: 0.3s; min-width: 80px;
-        }
-
-        .ctrl-btn:hover { background: #00f2ff; color: #000; box-shadow: 0 0 15px #00f2ff; }
-
+        /* CONTAINER UTAMA DI BAWAH */
         .bottom-ui {
             position: absolute; bottom: 30px; left: 0; right: 0;
             display: flex; justify-content: center; align-items: flex-end;
-            gap: 20px; z-index: 10; padding: 0 30px;
+            gap: 15px; z-index: 10; padding: 0 20px;
         }
 
-        .btn-container-equal {
-            width: 320px; height: 55px;
+        /* UKURAN BOX SAMA SEMUA */
+        .btn-box {
+            width: 320px; height: 60px;
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(20px); border-radius: 12px;
             border: 1px solid rgba(0, 242, 255, 0.3);
             display: flex; align-items: center; overflow: hidden;
+            transition: 0.3s;
         }
 
-        .btn-label {
-            flex: 1; font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem; color: #00f2ff; text-align: center;
-            text-decoration: none; display: flex; align-items: center; justify-content: center;
+        .btn-box:hover { border-color: #00f2ff; box-shadow: 0 0 15px rgba(0, 242, 255, 0.2); }
+
+        /* LABEL & INPUT */
+        .label-text {
+            flex: 1; font-family: 'Orbitron', sans-serif; font-size: 0.65rem;
+            color: #00f2ff; text-align: center; letter-spacing: 1px;
+            display: flex; align-items: center; justify-content: center;
+            text-decoration: none; height: 100%;
         }
 
         .action-btn {
-            height: 100%; padding: 0 20px; font-family: 'Orbitron', sans-serif;
-            font-size: 0.65rem; font-weight: bold; border: none; cursor: pointer;
+            height: 100%; padding: 0 15px; font-family: 'Orbitron', sans-serif;
+            font-size: 0.6rem; font-weight: bold; border: none; cursor: pointer;
         }
 
-        .btn-cyan { background: #00f2ff; color: #000; width: 140px; }
-        .btn-red { background: #ff0000; color: #fff; width: 100px; }
+        .btn-cyan { background: #00f2ff; color: #000; width: 110px; }
+        .btn-red { background: #ff0000; color: #fff; width: 90px; }
+
+        /* KONTROL MEDIA DI TENGAH */
+        .media-ctrl-group { display: flex; width: 100%; height: 100%; }
+        .ctrl-sub-btn {
+            flex: 1; background: transparent; border: none; color: #00f2ff;
+            font-family: 'Orbitron', sans-serif; font-size: 0.55rem; cursor: pointer;
+            transition: 0.2s; border-right: 1px solid rgba(0, 242, 255, 0.2);
+        }
+        .ctrl-sub-btn:last-child { border-right: none; }
+        .ctrl-sub-btn:hover { background: rgba(0, 242, 255, 0.2); color: white; }
 
         input#videoID {
             flex: 1; background: transparent; border: none; color: white;
-            padding: 0 15px; outline: none; font-size: 0.75rem;
+            padding: 0 10px; outline: none; font-size: 0.7rem; height: 100%;
         }
 
         .status-info { 
-            position: absolute; bottom: 165px; left: 50%; 
+            position: absolute; bottom: 105px; left: 50%; 
             transform: translateX(-50%); font-family: 'Orbitron'; 
             font-size: 0.6rem; color: #00f2ff; opacity: 0.8; 
             text-align: center; width: 100%; z-index: 10;
@@ -97,24 +94,22 @@
 
     <div class="status-info" id="trackName">READY TO VIBE</div>
 
-    <div class="media-controls">
-        <button class="ctrl-btn" onclick="prevTrack()">PREV</button>
-        <button class="ctrl-btn" id="playPauseBtn" onclick="togglePlay()">PLAY/PAUSE</button>
-        <button class="ctrl-btn" onclick="nextTrack()">NEXT</button>
-    </div>
-
     <div class="bottom-ui">
-        <div class="btn-container-equal">
-            <div class="btn-label">LOCAL MUZIK/VID</div>
+        <div class="btn-box">
+            <div class="label-text">LOCAL FILE</div>
             <input type="file" id="fileInput" accept="audio/*,video/mp4" style="display:none;" multiple onchange="handleFiles(this.files)">
             <button class="action-btn btn-cyan" onclick="document.getElementById('fileInput').click()">UPLOAD</button>
         </div>
 
-        <div class="btn-container-equal">
-            <a href="https://www.youtube.com/@ZenithMc10" target="_blank" class="btn-label">YOUTUBE ZENITH</a>
+        <div class="btn-box" style="width: 400px;"> <div class="media-ctrl-group">
+                <button class="ctrl-sub-btn" onclick="prevTrack()">PREV</button>
+                <button class="ctrl-btn ctrl-sub-btn" id="playPauseBtn" onclick="togglePlay()">PLAY/PAUSE</button>
+                <button class="ctrl-sub-btn" onclick="nextTrack()">NEXT</button>
+                <a href="https://www.youtube.com/@ZenithMc10" target="_blank" class="label-text" style="border-left: 1px solid rgba(0,242,255,0.3)">YT ZENITH</a>
+            </div>
         </div>
 
-        <div class="btn-container-equal">
+        <div class="btn-box">
             <input type="text" id="videoID" placeholder="YouTube Link...">
             <button class="action-btn btn-red" onclick="changeYT()">YT PLAY</button>
         </div>
@@ -131,22 +126,14 @@
         const audio = document.getElementById('localAudio');
         const video = document.getElementById('localVideo');
         const trackName = document.getElementById('trackName');
+        const playPauseBtn = document.getElementById('playPauseBtn');
 
-        // Initialize YouTube Player
         function onYouTubeIframeAPIReady() {
             ytPlayer = new YT.Player('player', {
-                height: '100%',
-                width: '100%',
-                videoId: 'jfKfPfyJRdk', // Default background
-                playerVars: { 'autoplay': 1, 'controls': 0, 'mute': 1, 'loop': 1, 'playlist': 'jfKfPfyJRdk' },
-                events: { 'onStateChange': onPlayerStateChange }
+                height: '100%', width: '100%',
+                videoId: 'jfKfPfyJRdk',
+                playerVars: { 'autoplay': 1, 'controls': 0, 'mute': 1, 'loop': 1, 'playlist': 'jfKfPfyJRdk' }
             });
-        }
-
-        function onPlayerStateChange(event) {
-            if (event.data == YT.PlayerState.ENDED && isYTMode) {
-                ytPlayer.playVideo(); // Loop YouTube
-            }
         }
 
         function handleFiles(files) {
@@ -161,8 +148,6 @@
         function playLocal(index) {
             const file = playlist[index];
             const url = URL.createObjectURL(file);
-            
-            // Matikan YouTube
             ytPlayer.mute();
             ytPlayer.pauseVideo();
             document.getElementById('player').style.display = 'none';
@@ -180,39 +165,37 @@
                 audio.play();
                 audio.onended = nextTrack;
             }
-            trackName.innerHTML = `LOCAL: ${file.name.toUpperCase()}`;
+            trackName.innerHTML = `PLAYING: ${file.name.toUpperCase()}`;
+            playPauseBtn.innerHTML = "PAUSE";
         }
 
         function togglePlay() {
             if (isYTMode) {
                 const state = ytPlayer.getPlayerState();
-                if (state == 1) ytPlayer.pauseVideo();
-                else ytPlayer.playVideo();
+                if (state == 1) { ytPlayer.pauseVideo(); playPauseBtn.innerHTML = "PLAY"; }
+                else { ytPlayer.playVideo(); playPauseBtn.innerHTML = "PAUSE"; }
             } else {
-                if (!audio.paused) audio.pause();
-                else if (audio.src) audio.play();
-                
-                if (!video.paused) video.pause();
-                else if (video.src) video.play();
+                const target = video.style.display === 'block' ? video : audio;
+                if (!target.paused) { target.pause(); playPauseBtn.innerHTML = "PLAY"; }
+                else { target.play(); playPauseBtn.innerHTML = "PAUSE"; }
             }
         }
 
         function nextTrack() {
-            if (isYTMode) {
-                // YouTube mode doesn't have a playlist unless defined, but we can restart
-                ytPlayer.seekTo(0);
-            } else if (playlist.length > 0) {
+            if (!isYTMode && playlist.length > 0) {
                 currentTrackIndex = (currentTrackIndex + 1) % playlist.length;
                 playLocal(currentTrackIndex);
+            } else if (isYTMode) {
+                ytPlayer.seekTo(0);
             }
         }
 
         function prevTrack() {
-            if (isYTMode) {
-                ytPlayer.seekTo(0);
-            } else if (playlist.length > 0) {
+            if (!isYTMode && playlist.length > 0) {
                 currentTrackIndex = (currentTrackIndex - 1 + playlist.length) % playlist.length;
                 playLocal(currentTrackIndex);
+            } else if (isYTMode) {
+                ytPlayer.seekTo(0);
             }
         }
 
@@ -225,13 +208,13 @@
 
             if (id) {
                 isYTMode = true;
-                audio.pause();
-                video.pause();
+                audio.pause(); video.pause();
                 video.style.display = 'none';
                 document.getElementById('player').style.display = 'block';
                 ytPlayer.loadVideoById(id);
                 ytPlayer.unMute();
                 trackName.innerHTML = "YT MODE ACTIVE";
+                playPauseBtn.innerHTML = "PAUSE";
             }
         }
     </script>
