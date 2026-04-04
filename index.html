@@ -7,18 +7,47 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background: #000; overflow: hidden; font-family: 'Poppins', sans-serif; color: white; }
+        body { 
+            background: #000; 
+            overflow: hidden; 
+            font-family: 'Poppins', sans-serif; 
+            color: white; 
+            height: 100vh; 
+            width: 100vw;
+        }
         
+        /* FIX: CONTAINER VIDEO FULLSCREEN ANTI-BLACK BAR */
         .video-container {
-            position: absolute; top: 50%; left: 50%;
-            width: 100vw; height: 56.25vw;
-            transform: translate(-50%, -50%);
-            pointer-events: none; border: none;
+            position: fixed; /* Pake fixed biar bener-bener ngunci ke layar */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 0;
+            overflow: hidden;
+            background: #000;
         }
 
-        iframe, #localVideo { width: 100%; height: 100%; border: none; }
-        #localVideo { display: none; object-fit: cover; pointer-events: none; }
+        #player, #localVideo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100vw;
+            height: 100vh;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            border: none;
+        }
+
+        /* Logika Cover: Memastikan aspek rasio 16:9 selalu memenuhi layar */
+        @media (min-aspect-ratio: 16/9) {
+            #player, #localVideo { width: 100vw; height: 56.25vw; }
+        }
+        @media (max-aspect-ratio: 16/9) {
+            #player, #localVideo { width: 177.78vh; height: 100vh; }
+        }
+
+        #localVideo { display: none; object-fit: cover; }
 
         .overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -35,7 +64,8 @@
         .btn-container-equal {
             width: 320px; height: 55px;
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px); border-radius: 12px;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-radius: 12px;
             border: 1px solid rgba(0, 242, 255, 0.3);
             display: flex; align-items: center; overflow: hidden;
             transition: 0.3s;
@@ -44,6 +74,7 @@
         .btn-container-equal:hover {
             border-color: #00f2ff;
             box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
+            transform: translateY(-2px);
         }
 
         .btn-label {
@@ -78,21 +109,23 @@
             transform: translateX(-50%); font-family: 'Orbitron'; 
             font-size: 0.6rem; color: #00f2ff; opacity: 0.8; 
             text-align: center; width: 100%; z-index: 10;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
         }
 
         @media (max-width: 1000px) {
-            .bottom-ui { flex-direction: column; align-items: center; }
-            .btn-container-equal { width: 90%; }
+            .bottom-ui { flex-direction: column; align-items: center; bottom: 20px; }
+            .btn-container-equal { width: 90%; height: 50px; }
+            .status-info { bottom: 185px; }
         }
     </style>
 </head>
 <body>
-    <div class="overlay"></div>
-
     <div class="video-container">
         <div id="player"></div>
         <video id="localVideo" muted loop playsinline></video>
     </div>
+
+    <div class="overlay"></div>
 
     <audio id="localAudio"></audio>
 
@@ -130,9 +163,17 @@
 
         function onYouTubeIframeAPIReady() {
             ytPlayer = new YT.Player('player', {
-                height: '100%', width: '100%',
                 videoId: 'jfKfPfyJRdk',
-                playerVars: { 'autoplay': 1, 'controls': 0, 'mute': 1, 'loop': 1, 'playlist': 'jfKfPfyJRdk' }
+                playerVars: { 
+                    'autoplay': 1, 
+                    'controls': 0, 
+                    'mute': 1, 
+                    'loop': 1, 
+                    'playlist': 'jfKfPfyJRdk',
+                    'disablekb': 1,
+                    'iv_load_policy': 3,
+                    'rel': 0
+                }
             });
         }
 
@@ -186,7 +227,10 @@
                 audio.pause(); video.pause();
                 video.style.display = 'none';
                 document.getElementById('player').style.display = 'block';
-                ytPlayer.loadVideoById(id);
+                ytPlayer.loadVideoById({
+                    videoId: id,
+                    suggestedQuality: 'hd1080'
+                });
                 ytPlayer.unMute();
                 trackName.innerHTML = "YOUTUBE PLAYER MODE";
             }
