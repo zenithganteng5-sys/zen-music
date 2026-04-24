@@ -7,58 +7,83 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body { 
-            background: #000; 
-            overflow: hidden; 
-            font-family: 'Poppins', sans-serif; 
+            /* PAKAI WALLPAPER GUNUNG PILIHAN LU */
+            background-image: url('https://img.freepik.com/premium-photo/dark-mountains-images-background-copy-space_1179130-779397.jpg?semt=ais_hybrid&w=740&q=80'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-color: #000;
             color: white; 
+            font-family: 'Poppins', sans-serif; 
             height: 100vh; 
             width: 100vw;
-        }
-        
-        /* FIX: CONTAINER VIDEO FULLSCREEN ANTI-BLACK BAR */
-        .video-container {
-            position: fixed; /* Pake fixed biar bener-bener ngunci ke layar */
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
             overflow: hidden;
-            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
-        #player, #localVideo {
+        /* OVERLAY GELAP SUPAYA UI KELIHATAN TAJAM */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
+            z-index: 0;
+        }
+
+        /* YOUTUBE PLAYER DISEMBUNYIKAN (TETAP JALAN BUAT AUDIO) */
+        #player {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100vw;
-            height: 100vh;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            border: none;
+            top: -1000px; /* Lempar ke luar layar */
+            left: -1000px;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
         }
 
-        /* Logika Cover: Memastikan aspek rasio 16:9 selalu memenuhi layar */
-        @media (min-aspect-ratio: 16/9) {
-            #player, #localVideo { width: 100vw; height: 56.25vw; }
-        }
-        @media (max-aspect-ratio: 16/9) {
-            #player, #localVideo { width: 177.78vh; height: 100vh; }
+        .main-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            width: 100%;
         }
 
-        #localVideo { display: none; object-fit: cover; }
+        .title-area {
+            margin-bottom: 50px;
+        }
 
-        .overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.7) 100%);
-            z-index: 1; pointer-events: none;
+        .title-area h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            letter-spacing: 8px;
+            background: linear-gradient(90deg, #00f2ff, #bc13fe); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
+        }
+
+        .status-info { 
+            font-family: 'Orbitron'; 
+            font-size: 0.7rem; 
+            color: #00f2ff; 
+            opacity: 0.8; 
+            letter-spacing: 3px;
+            margin-top: 10px;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
         }
 
         .bottom-ui {
-            position: absolute; bottom: 30px; left: 0; right: 0;
-            display: flex; justify-content: center; align-items: flex-end;
-            gap: 20px; z-index: 10; padding: 0 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 0 30px;
+            margin-top: 50px;
         }
 
         .btn-container-equal {
@@ -66,89 +91,83 @@
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-radius: 12px;
-            border: 1px solid rgba(0, 242, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             display: flex; align-items: center; overflow: hidden;
-            transition: 0.3s;
+            transition: 0.3s ease;
         }
 
         .btn-container-equal:hover {
             border-color: #00f2ff;
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.2);
-            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
+            transform: translateY(-3px);
         }
 
         .btn-label {
             flex: 1; padding: 0 15px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem; color: #00f2ff;
+            font-size: 0.7rem; color: #fff;
             text-align: center; letter-spacing: 2px;
             text-decoration: none; display: flex;
             align-items: center; justify-content: center; height: 100%;
         }
 
         .action-btn {
-            height: 100%; padding: 0 20px;
+            height: 100%; padding: 0 25px;
             font-family: 'Orbitron', sans-serif;
-            font-size: 0.65rem; font-weight: bold;
+            font-size: 0.7rem; font-weight: bold;
             border: none; cursor: pointer; transition: 0.3s;
         }
 
-        .btn-cyan { background: #00f2ff; color: #000; width: 140px; }
-        .btn-cyan:hover { background: #fff; box-shadow: 0 0 20px #00f2ff; }
+        .btn-cyan { background: #00f2ff; color: #000; }
+        .btn-cyan:hover { background: #fff; }
 
-        .btn-red { background: #ff0000; color: #fff; width: 100px; }
+        .btn-red { background: #ff0000; color: #fff; }
         .btn-red:hover { background: #cc0000; }
 
         input#videoID {
             flex: 1; background: transparent; border: none; color: white;
-            padding: 0 15px; outline: none; font-size: 0.75rem; height: 100%;
-        }
-
-        .status-info { 
-            position: absolute; bottom: 95px; left: 50%; 
-            transform: translateX(-50%); font-family: 'Orbitron'; 
-            font-size: 0.6rem; color: #00f2ff; opacity: 0.8; 
-            text-align: center; width: 100%; z-index: 10;
-            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+            padding: 0 20px; outline: none; font-size: 0.8rem; height: 100%;
+            font-family: 'Poppins';
         }
 
         @media (max-width: 1000px) {
-            .bottom-ui { flex-direction: column; align-items: center; bottom: 20px; }
-            .btn-container-equal { width: 90%; height: 50px; }
-            .status-info { bottom: 185px; }
+            .bottom-ui { flex-direction: column; align-items: center; }
+            .btn-container-equal { width: 90%; }
+            .title-area h1 { font-size: 2rem; }
         }
     </style>
 </head>
 <body>
-    <div class="video-container">
-        <div id="player"></div>
-        <video id="localVideo" muted loop playsinline></video>
-    </div>
 
-    <div class="overlay"></div>
+    <div id="player"></div>
+
+    <div class="main-content">
+        <div class="title-area">
+            <h1>ZENITH MUZIK</h1>
+            <div class="status-info" id="trackName">STANDBY: READY TO VIBE</div>
+        </div>
+
+        <div class="bottom-ui">
+            <div class="btn-container-equal">
+                <div class="btn-label">LOCAL MUZIK</div>
+                <input type="file" id="fileInput" accept="audio/*,video/mp4" style="display:none;" multiple onchange="handleFiles(this.files)">
+                <button class="action-btn btn-cyan" onclick="document.getElementById('fileInput').click()">UPLOAD</button>
+            </div>
+
+            <div class="btn-container-equal">
+                <a href="https://www.youtube.com/@ZenithMc10" target="_blank" class="btn-label">
+                    YOUTUBE ZENITH
+                </a>
+            </div>
+
+            <div class="btn-container-equal">
+                <input type="text" id="videoID" placeholder="YouTube Link...">
+                <button class="action-btn btn-red" onclick="changeYT()">YT PLAY</button>
+            </div>
+        </div>
+    </div>
 
     <audio id="localAudio"></audio>
-
-    <div class="status-info" id="trackName">STANDBY: READY TO VIBE</div>
-
-    <div class="bottom-ui">
-        <div class="btn-container-equal">
-            <div class="btn-label">LOCAL MUZIK</div>
-            <input type="file" id="fileInput" accept="audio/*,video/mp4" style="display:none;" multiple onchange="handleFiles(this.files)">
-            <button class="action-btn btn-cyan" onclick="document.getElementById('fileInput').click()">UPLOAD</button>
-        </div>
-
-        <div class="btn-container-equal">
-            <a href="https://www.youtube.com/@ZenithMc10" target="_blank" class="btn-label" style="width: 100%;">
-                YOUTUBE ZENITH
-            </a>
-        </div>
-
-        <div class="btn-box btn-container-equal">
-            <input type="text" id="videoID" placeholder="YouTube Link...">
-            <button class="action-btn btn-red" onclick="changeYT()">YT PLAY</button>
-        </div>
-    </div>
 
     <script src="https://www.youtube.com/iframe_api"></script>
 
@@ -156,24 +175,14 @@
         let ytPlayer;
         let playlist = [];
         let currentTrackIndex = 0;
-
         const audio = document.getElementById('localAudio');
-        const video = document.getElementById('localVideo');
         const trackName = document.getElementById('trackName');
 
         function onYouTubeIframeAPIReady() {
             ytPlayer = new YT.Player('player', {
-                videoId: 'jfKfPfyJRdk',
-                playerVars: { 
-                    'autoplay': 1, 
-                    'controls': 0, 
-                    'mute': 1, 
-                    'loop': 1, 
-                    'playlist': 'jfKfPfyJRdk',
-                    'disablekb': 1,
-                    'iv_load_policy': 3,
-                    'rel': 0
-                }
+                height: '1', width: '1',
+                videoId: '', 
+                playerVars: { 'autoplay': 1, 'controls': 0, 'disablekb': 1 }
             });
         }
 
@@ -187,26 +196,12 @@
 
         function playTrack(index) {
             if (index < playlist.length) {
-                ytPlayer.mute();
-                ytPlayer.pauseVideo();
-                document.getElementById('player').style.display = 'none';
-
+                if(ytPlayer) ytPlayer.pauseVideo();
                 const file = playlist[index];
                 const url = URL.createObjectURL(file);
-
-                if (file.type.includes('video')) {
-                    audio.pause();
-                    video.style.display = 'block';
-                    video.src = url;
-                    video.play();
-                    video.onended = nextTrack;
-                } else {
-                    video.pause();
-                    video.style.display = 'none';
-                    audio.src = url;
-                    audio.play();
-                    audio.onended = nextTrack;
-                }
+                audio.src = url;
+                audio.play();
+                audio.onended = nextTrack;
                 trackName.innerHTML = `PLAYING: ${file.name.toUpperCase()}`;
             }
         }
@@ -224,15 +219,11 @@
             else id = input;
 
             if(id) {
-                audio.pause(); video.pause();
-                video.style.display = 'none';
-                document.getElementById('player').style.display = 'block';
-                ytPlayer.loadVideoById({
-                    videoId: id,
-                    suggestedQuality: 'hd1080'
-                });
+                audio.pause();
+                ytPlayer.loadVideoById(id);
                 ytPlayer.unMute();
-                trackName.innerHTML = "YOUTUBE PLAYER MODE";
+                ytPlayer.playVideo();
+                trackName.innerHTML = "MODE: YOUTUBE AUDIO STREAMING";
             }
         }
     </script>
