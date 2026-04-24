@@ -9,7 +9,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body { 
-            /* PAKAI WALLPAPER GUNUNG PILIHAN LU */
             background-image: url('https://img.freepik.com/premium-photo/dark-mountains-images-background-copy-space_1179130-779397.jpg?semt=ais_hybrid&w=740&q=80'); 
             background-size: cover;
             background-position: center;
@@ -27,24 +26,24 @@
             justify-content: center;
         }
 
-        /* OVERLAY GELAP SUPAYA UI KELIHATAN TAJAM */
         body::before {
             content: "";
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
-            z-index: 0;
+            background: rgba(0, 0, 0, 0.6); 
+            z-index: 1;
         }
 
-        /* YOUTUBE PLAYER DISEMBUNYIKAN (TETAP JALAN BUAT AUDIO) */
+        /* FIX: Player ditaruh di belakang background biar tetep 'aktif' tapi gak kelihatan */
         #player {
-            position: absolute;
-            top: -1000px; /* Lempar ke luar layar */
-            left: -1000px;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Di bawah overlay hitam */
+            pointer-events: none;
         }
 
         .main-content {
@@ -52,10 +51,6 @@
             z-index: 10;
             text-align: center;
             width: 100%;
-        }
-
-        .title-area {
-            margin-bottom: 50px;
         }
 
         .title-area h1 {
@@ -75,21 +70,19 @@
             opacity: 0.8; 
             letter-spacing: 3px;
             margin-top: 10px;
-            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
         }
 
         .bottom-ui {
             display: flex;
             justify-content: center;
             gap: 20px;
-            padding: 0 30px;
             margin-top: 50px;
         }
 
         .btn-container-equal {
             width: 320px; height: 55px;
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             display: flex; align-items: center; overflow: hidden;
@@ -98,42 +91,31 @@
 
         .btn-container-equal:hover {
             border-color: #00f2ff;
-            box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);
             transform: translateY(-3px);
         }
 
         .btn-label {
-            flex: 1; padding: 0 15px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem; color: #fff;
-            text-align: center; letter-spacing: 2px;
-            text-decoration: none; display: flex;
-            align-items: center; justify-content: center; height: 100%;
+            flex: 1; font-family: 'Orbitron'; font-size: 0.7rem; color: #fff;
+            text-align: center; letter-spacing: 2px; text-decoration: none;
         }
 
         .action-btn {
             height: 100%; padding: 0 25px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem; font-weight: bold;
-            border: none; cursor: pointer; transition: 0.3s;
+            font-family: 'Orbitron'; font-size: 0.7rem; font-weight: bold;
+            border: none; cursor: pointer;
         }
 
         .btn-cyan { background: #00f2ff; color: #000; }
-        .btn-cyan:hover { background: #fff; }
-
         .btn-red { background: #ff0000; color: #fff; }
-        .btn-red:hover { background: #cc0000; }
 
         input#videoID {
             flex: 1; background: transparent; border: none; color: white;
-            padding: 0 20px; outline: none; font-size: 0.8rem; height: 100%;
-            font-family: 'Poppins';
+            padding: 0 20px; outline: none; font-size: 0.8rem;
         }
 
         @media (max-width: 1000px) {
             .bottom-ui { flex-direction: column; align-items: center; }
             .btn-container-equal { width: 90%; }
-            .title-area h1 { font-size: 2rem; }
         }
     </style>
 </head>
@@ -155,13 +137,11 @@
             </div>
 
             <div class="btn-container-equal">
-                <a href="https://www.youtube.com/@ZenithMc10" target="_blank" class="btn-label">
-                    YOUTUBE ZENITH
-                </a>
+                <a href="https://www.youtube.com/@ZenithMc10" target="_blank" class="btn-label">YOUTUBE ZENITH</a>
             </div>
 
             <div class="btn-container-equal">
-                <input type="text" id="videoID" placeholder="YouTube Link...">
+                <input type="text" id="videoID" placeholder="Paste YouTube Link...">
                 <button class="action-btn btn-red" onclick="changeYT()">YT PLAY</button>
             </div>
         </div>
@@ -180,9 +160,14 @@
 
         function onYouTubeIframeAPIReady() {
             ytPlayer = new YT.Player('player', {
-                height: '1', width: '1',
-                videoId: '', 
-                playerVars: { 'autoplay': 1, 'controls': 0, 'disablekb': 1 }
+                videoId: 'jfKfPfyJRdk', // Default video biar API ke-load
+                playerVars: { 
+                    'autoplay': 1, 
+                    'controls': 0, 
+                    'mute': 1, // Start mute biar gak diblok browser
+                    'loop': 1,
+                    'playlist': 'jfKfPfyJRdk'
+                }
             });
         }
 
@@ -218,10 +203,12 @@
             else if (input.includes("youtu.be/")) id = input.split('youtu.be/')[1].split('?')[0];
             else id = input;
 
-            if(id) {
+            if(id && ytPlayer) {
                 audio.pause();
+                // Kuncinya di sini: load video baru dan langsung unMute
                 ytPlayer.loadVideoById(id);
-                ytPlayer.unMute();
+                ytPlayer.unMute(); 
+                ytPlayer.setVolume(100);
                 ytPlayer.playVideo();
                 trackName.innerHTML = "MODE: YOUTUBE AUDIO STREAMING";
             }
